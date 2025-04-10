@@ -1,8 +1,9 @@
 Create a Discord Bot
 Go to the Discord Developer Portal:
 Click "New Application" and give it a name.
-Go to "Bot" → Click "Add Bot".
-Copy your Bot Token (you’ll need it for secrets).
+Click on Installation, uncheck user Install, go to guild install, click scopes, add bot, select permissions: Read Message history, View channels, Send messages
+Go to "Bot" enable Message Content Intent
+Click Reset Token to get a new token and Copy it for secrets
 Under "OAuth2" > URL Generator:
 Scopes: bot, applications.commands
 Bot Permissions: Send Messages, Use Application Commands
