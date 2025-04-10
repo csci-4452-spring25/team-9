@@ -24,9 +24,9 @@ jobs:
       - name: Run Discord bot
         env:
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPO: ${{ secrets.GITHUB_REPO }}
-          GITHUB_BRANCH: ${{ secrets.GITHUB_BRANCH }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_REPO: ${{ secrets.GH_REPO }}
+          GH_BRANCH: ${{ secrets.GH_BRANCH }}
           TFVARS_FOLDER: ${{ secrets.TFVARS_FOLDER }}
         run: |
           python DiscordBot/discordbot.py  # Path to your discord bot script inside DiscordBot folder
