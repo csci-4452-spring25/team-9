@@ -7,9 +7,9 @@ import discord
 
 # Get environment variables
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-GITHUB_TOKEN = os.getenv("GH_TOKEN")
-GITHUB_REPO = os.getenv("GH_REPO")
-GITHUB_BRANCH = os.getenv("GH_BRANCH", "main")
+GH_TOKEN = os.getenv("GH_TOKEN")
+GH_REPO = os.getenv("GH_REPO")
+GH_BRANCH = os.getenv("GH_BRANCH", "main")
 TFVARS_FOLDER = os.getenv("TFVARS_FOLDER", "MinecraftServer")
 
 # GitHub setup
