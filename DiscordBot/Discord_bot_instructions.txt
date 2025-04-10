@@ -24,3 +24,5 @@ Click Run workflow to trigger the bot.
 
 In discord type: /create
 You’ll be prompted to fill in the options. Once submitted, it will push or update the terraform.tfvars file in your GitHub repo inside the MinecraftServer/ folder.
+
+Delete terraform.tfvars until discordbot.py is updated
