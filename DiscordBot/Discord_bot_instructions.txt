@@ -1,0 +1,25 @@
+Create a Discord Bot
+Go to the Discord Developer Portal:
+Click "New Application" and give it a name.
+Go to "Bot" → Click "Add Bot".
+Copy your Bot Token (you’ll need it for secrets).
+Under "OAuth2" > URL Generator:
+Scopes: bot, applications.commands
+Bot Permissions: Send Messages, Use Application Commands
+Use the generated link to invite the bot to your server.
+
+Create GitHub Secrets
+Go to your GitHub repository, and in the Settings tab, navigate to Secrets. Add the following secrets:
+DISCORD_TOKEN: Your bot’s Discord token.
+GITHUB_TOKEN: Your GitHub personal access token (with the repo scope).
+GITHUB_REPO: Your GitHub repository name (e.g., username/repo-name).
+Optionally, you can add GITHUB_BRANCH if you need to specify a branch (e.g., main).
+
+Trigger the GitHub Actions Workflow
+Go to your GitHub repository:
+Navigate to the Actions tab.
+Select Run Discord Bot (the name of your workflow).
+Click Run workflow to trigger the bot.
+
+In discord type: /create
+You’ll be prompted to fill in the options. Once submitted, it will push or update the terraform.tfvars file in your GitHub repo inside the MinecraftServer/ folder.
