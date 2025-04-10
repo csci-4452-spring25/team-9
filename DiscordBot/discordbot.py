@@ -44,7 +44,7 @@ async def push_tfvars(
         f'mojang_server_url = "{mojang_server_url}"\n'
     )
 
-    filename = f"{TFVARS_FOLDER}/terraform.tfvars"
+    filename = f"MinecraftServer/terraform.tfvars"
 
     try:
         repo.create_file(
