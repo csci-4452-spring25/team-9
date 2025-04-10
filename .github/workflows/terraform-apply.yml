@@ -3,7 +3,7 @@ name: "Terraform Apply"
 on:
   push:
     branches:
-      - main/MinecraftServer
+      - main
 
 env: 
   TF_CLOUD_ORGANIZATION: "cmnguyen252"
