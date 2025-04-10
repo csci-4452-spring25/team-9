@@ -7,14 +7,14 @@ import discord
 
 # Get environment variables
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_REPO = os.getenv("GITHUB_REPO")
-GITHUB_BRANCH = os.getenv("GITHUB_BRANCH", "main")
+GITHUB_TOKEN = os.getenv("GH_TOKEN")
+GITHUB_REPO = os.getenv("GH_REPO")
+GITHUB_BRANCH = os.getenv("GH_BRANCH", "main")
 TFVARS_FOLDER = os.getenv("TFVARS_FOLDER", "MinecraftServer")
 
 # GitHub setup
-github = Github(GITHUB_TOKEN)
-repo = github.get_repo(GITHUB_REPO)
+github = Github(GH_TOKEN)
+repo = github.get_repo(GH_REPO)
 
 # Discord bot setup
 intents = Intents.default()
@@ -51,9 +51,9 @@ async def push_tfvars(
             path=filename,
             message=f"Add tfvars file via Discord bot: {filename}",
             content=content,
-            branch=GITHUB_BRANCH
+            branch=GH_BRANCH
         )
-        await interaction.response.send_message(f"✅ tfvars file pushed to `{filename}` in `{GITHUB_REPO}`.")
+        await interaction.response.send_message(f"✅ tfvars file pushed to `{filename}` in `{GH_REPO}`.")
     except Exception as e:
         await interaction.response.send_message(f"❌ Failed to push file: {str(e)}")
 
