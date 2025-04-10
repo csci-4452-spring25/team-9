@@ -9,7 +9,7 @@ env:
   TF_CLOUD_ORGANIZATION: "cmnguyen252"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: "Discord"
-  CONFIG_DIRECTORY: "./"
+  CONFIG_DIRECTORY: "./MinecraftServer"
 
 jobs:
   terraform:
