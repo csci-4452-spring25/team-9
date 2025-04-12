@@ -19,10 +19,7 @@ Optionally, you can add GITHUB_BRANCH if you need to specify a branch (e.g., mai
 Trigger the GitHub Actions Workflow
 Go to your GitHub repository:
 Navigate to the Actions tab.
-Select Run Discord Bot (the name of your workflow).
-Click Run workflow to trigger the bot.
+Perform workflow dispatch to send files to lambda
 
 In discord type: /create
 You’ll be prompted to fill in the options. Once submitted, it will push or update the terraform.tfvars file in your GitHub repo inside the MinecraftServer/ folder.
-
-Delete terraform.tfvars until discordbot.py is updated
