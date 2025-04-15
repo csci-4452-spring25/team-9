@@ -23,6 +23,12 @@ def verify_signature(event):
         body = base64.b64decode(event["body"]).decode("utf-8")
     else:
         body = event['body']
+
+    is_verified = verify_key(
+        raw_body.encode(body), signature, timestamp, discord_public_key
+    )
+    print("Event Verification Status:", is_verified)
+    return is_verified
     
     if not verify_key(body, signature, timestamp, DISCORD_PUBLIC_KEY):
         raise Exception("Invalid request signature")
