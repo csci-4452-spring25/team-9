@@ -19,7 +19,10 @@ repo = github.get_repo(GH_REPO)
 def verify_signature(event):
     signature = event['headers'].get('x-signature-ed25519')
     timestamp = event['headers'].get('x-signature-timestamp')
-    body = event['body']
+    if event.get("isBase64Encoded"):
+        body = base64.b64decode(event["body"]).decode("utf-8")
+    else:
+        body = event['body']
     
     if not verify_key(body, signature, timestamp, DISCORD_PUBLIC_KEY):
         raise Exception("Invalid request signature")
