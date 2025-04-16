@@ -41,7 +41,7 @@ jobs:
     - name: Update Lambda environment variables
       run: |
         aws lambda update-function-configuration \
-          --function-name discord-bot-lambda \
+          --function-name discordBot \
           --environment "Variables={
             DISCORD_PUBLIC_KEY='${{ secrets.DISCORD_PUBLIC_KEY }}',
             GH_TOKEN='${{ secrets.GH_TOKEN }}',
