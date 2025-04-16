@@ -16,12 +16,7 @@ jobs:
       with:
         python-version: '3.8'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r DiscordBot/requirements.txt
-
-    - name: Create deployment package
+    - name: Install Python dependencies into deployment folder
       run: |
         mkdir deployment
         pip install -r DiscordBot/requirements.txt --target deployment/
@@ -29,16 +24,28 @@ jobs:
         cd deployment
         zip -r ../discord-bot-lambda.zip .
         cd ..
-        
-    - name: Deploy Lambda function
-      uses: einaregilsson/lambda-action@v1
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
       with:
-        function_name: discord-bot-lambda
-        zip_file: discord-bot-lambda.zip
-        region: us-east-2
-        environment_variables: |
-          DISCORD_PUBLIC_KEY=${{ secrets.DISCORD_PUBLIC_KEY }}
-          GH_TOKEN=${{ secrets.GH_TOKEN }}
-          GH_REPO=${{ secrets.GH_REPO }}
-          GH_BRANCH=${{ secrets.GH_BRANCH }}
-          TFVARS_FOLDER=${{ secrets.TFVARS_FOLDER }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+
+    - name: Deploy Lambda function via AWS CLI
+      run: |
+        aws lambda update-function-code \
+          --function-name discord-bot-lambda \
+          --zip-file fileb://discord-bot-lambda.zip
+
+    - name: Update Lambda environment variables
+      run: |
+        aws lambda update-function-configuration \
+          --function-name discord-bot-lambda \
+          --environment "Variables={
+            DISCORD_PUBLIC_KEY='${{ secrets.DISCORD_PUBLIC_KEY }}',
+            GH_TOKEN='${{ secrets.GH_TOKEN }}',
+            GH_REPO='${{ secrets.GH_REPO }}',
+            GH_BRANCH='${{ secrets.GH_BRANCH }}',
+            TFVARS_FOLDER='${{ secrets.TFVARS_FOLDER }}'
+          }"
