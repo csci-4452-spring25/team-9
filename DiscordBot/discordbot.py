@@ -33,15 +33,9 @@ def verify_signature(event):
     print("Signature verification:", is_valid)
     return is_valid
 
-    
-    if not verify_key(body, signature, timestamp, DISCORD_PUBLIC_KEY):
-        raise Exception("Invalid request signature")
-
 # Lambda handler function to handle Discord interactions
 def lambda_handler(event, context):
-    try:
-        verify_signature(event)
-    except Exception as e:
+    if not verify_signature(event):
         return {
             "statusCode": 401,
             "body": "Invalid request"
@@ -49,7 +43,7 @@ def lambda_handler(event, context):
 
     body = json.loads(event['body'])
 
-    if body['type'] == 1:  # Discord challenge response
+    if body['type'] == 1:  # Discord challenge response (PING)
         return {
             "statusCode": 200,
             "body": json.dumps({ "type": 1 })
