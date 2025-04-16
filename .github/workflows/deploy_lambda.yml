@@ -50,4 +50,4 @@ jobs:
             GH_REPO='${{ secrets.GH_REPO }}',
             GH_BRANCH='${{ secrets.GH_BRANCH }}',
             TFVARS_FOLDER='${{ secrets.TFVARS_FOLDER }}'}" && break || sleep 30
-      done
+        done
