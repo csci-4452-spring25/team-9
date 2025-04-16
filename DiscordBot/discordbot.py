@@ -5,6 +5,8 @@ from discord import app_commands
 from github import Github
 import discord
 import boto3
+from dotenv import load_dotenv
+load_dotenv()
 
 # Get environment variables
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
