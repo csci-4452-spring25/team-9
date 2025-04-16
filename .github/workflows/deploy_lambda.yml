@@ -24,15 +24,12 @@ jobs:
     - name: Create deployment package
       run: |
         mkdir deployment
-        cp -r DiscordBot/deploy deployment/
-        cp -r DiscordBot/lambda deployment/
+        pip install -r DiscordBot/requirements.txt --target deployment/
+        cp DiscordBot/*.py deployment/
         cd deployment
-        pip install -r requirements.txt --target ./package
-        cp -r . ./package
-        cd package
         zip -r ../discord-bot-lambda.zip .
         cd ..
-      
+        
     - name: Deploy Lambda function
       uses: einaregilsson/lambda-action@v1
       with:
