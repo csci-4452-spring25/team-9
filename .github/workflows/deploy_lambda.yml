@@ -32,10 +32,10 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-2
 
-    - name: Deploy Lambda function via AWS CLI
+    - name: Deploy Lambda function
       run: |
         aws lambda update-function-code \
-          --function-name discord-bot-lambda \
+          --function-name discordBot \
           --zip-file fileb://discord-bot-lambda.zip
 
     - name: Update Lambda environment variables
