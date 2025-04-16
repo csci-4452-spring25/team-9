@@ -1,89 +1,119 @@
-import json
 import os
-import nacl.signing
-from discord_interactions import verify_key, InteractionType, InteractionResponseType
+from discord import Intents
+from discord.ext import commands
+from discord import app_commands
 from github import Github
+import discord
+import boto3
 
 # Get environment variables
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 GH_TOKEN = os.getenv("GH_TOKEN")
 GH_REPO = os.getenv("GH_REPO")
 GH_BRANCH = os.getenv("GH_BRANCH", "main")
 TFVARS_FOLDER = os.getenv("TFVARS_FOLDER", "MinecraftServer")
+AWS_REGION = "us-east-1"
+INSTANCE_NAME = "Minecraft Server"  # Name of EC2 instance
 
 # GitHub setup
 github = Github(GH_TOKEN)
 repo = github.get_repo(GH_REPO)
 
-# Verify Discord request signature
-def verify_signature(event):
-    DISCORD_PUBLIC_KEY = os.getenv("DISCORD_PUBLIC_KEY")
-    if not DISCORD_PUBLIC_KEY:
-        print("DISCORD_PUBLIC_KEY is missing!")
-        return False
+# AWS setup
+ec2 = boto3.client('ec2', region_name=AWS_REGION)
 
-    signature = event['headers'].get('x-signature-ed25519')
-    timestamp = event['headers'].get('x-signature-timestamp')
+# Discord bot setup
+intents = Intents.default()
+bot = commands.Bot(command_prefix="!", intents=intents)
+tree = bot.tree
 
-    if event.get("isBase64Encoded"):
-        raw_body = base64.b64decode(event["body"])
-    else:
-        raw_body = event["body"].encode("utf-8")
+# Create the tfvars file
+@tree.command(name="create", description="Create a new tfvars file in GitHub")
+@app_commands.describe(
+    region="AWS region (default: us-east-1)",
+    instance_type="EC2 instance type (default: t2.small)",
+    mojang_server_url="Minecraft server JAR URL (default: Mojang vanilla server)"
+)
+async def push_tfvars(
+    interaction: discord.Interaction,
+    region: str = "",
+    instance_type: str = "",
+    mojang_server_url: str = ""
+):
+    # Apply defaults if blank
+    region = region or "us-east-1"
+    instance_type = instance_type or "t2.small"
+    mojang_server_url = mojang_server_url or "https://piston-data.mojang.com/v1/objects/e6ec2f64e6080b9b5d9b471b291c33cc7f509733/server.jar"
 
-    is_valid = verify_key(raw_body, signature, timestamp, DISCORD_PUBLIC_KEY)
-    print("Signature verification:", is_valid)
-    return is_valid
+    content = (
+        f'region = "{region}"\n'
+        f'instance_type = "{instance_type}"\n'
+        f'mojang_server_url = "{mojang_server_url}"\n'
+    )
 
-# Lambda handler function to handle Discord interactions
-def lambda_handler(event, context):
-    if not verify_signature(event):
-        return {
-            "statusCode": 401,
-            "body": "Invalid request"
-        }
+    filename = f"MinecraftServer/terraform.tfvars"
 
-    body = json.loads(event['body'])
-
-    if body['type'] == 1:  # Discord challenge response (PING)
-        return {
-            "statusCode": 200,
-            "body": json.dumps({ "type": 1 })
-        }
-
-    if body['data']['name'] == 'create':  # Handle the /create slash command
-        region = body['data'].get('options', [{}])[0].get('value', 'us-east-1')
-        instance_type = body['data'].get('options', [{}])[1].get('value', 't2.small')
-        mojang_server_url = body['data'].get('options', [{}])[2].get('value', 'https://piston-data.mojang.com/v1/objects/e6ec2f64e6080b9b5d9b471b291c33cc7f509733/server.jar')
-
-        content = (
-            f'region = "{region}"\n'
-            f'instance_type = "{instance_type}"\n'
-            f'mojang_server_url = "{mojang_server_url}"\n'
+    try:
+        repo.create_file(
+            path=filename,
+            message=f"Add tfvars file via Discord bot: {filename}",
+            content=content,
+            branch=GH_BRANCH
         )
+        await interaction.response.send_message(f"✅ tfvars file pushed to `{filename}` in `{GH_REPO}`.")
+    except Exception as e:
+        await interaction.response.send_message(f"❌ Failed to push file: {str(e)}")
 
-        filename = f"MinecraftServer/terraform.tfvars"
-        try:
-            repo.create_file(
-                path=filename,
-                message=f"Add tfvars file via Discord bot: {filename}",
-                content=content,
-                branch=GH_BRANCH
-            )
-            return {
-                "statusCode": 200,
-                "body": json.dumps({
-                    "type": 4,
-                    "data": {
-                        "content": "✅ tfvars file pushed to GitHub!"
-                    }
-                })
-            }
-        except Exception as e:
-            return {
-                "statusCode": 500,
-                "body": f"❌ Failed to push file: {str(e)}"
-            }
+# /status command
+@tree.command(name="status", description="Check the status of the Minecraft server")
+async def status(interaction: discord.Interaction):
+    try:
+        instances = ec2.describe_instances(Filters=[{'Name': 'tag:Name', 'Values': [INSTANCE_NAME]}])
+        instance = instances['Reservations'][0]['Instances'][0]
+        state = instance['State']['Name']
+        public_ip = instance.get('PublicIpAddress', 'N/A')
 
-    return {
-        "statusCode": 400,
-        "body": "Unhandled interaction"
-    }
+        status_message = f"✅ Server Status: {state.capitalize()}. "
+        if public_ip != 'N/A':
+            status_message += f"Public IP: {public_ip}"
+        else:
+            status_message += "No public IP assigned."
+
+        await interaction.response.send_message(status_message)
+    except Exception as e:
+        await interaction.response.send_message(f"❌ Failed to retrieve server status: {str(e)}")
+
+# /shutdown command
+@tree.command(name="shutdown", description="Shutdown the Minecraft server")
+async def shutdown(interaction: discord.Interaction):
+    try:
+        instances = ec2.describe_instances(Filters=[{'Name': 'tag:Name', 'Values': [INSTANCE_NAME]}])
+        instance_id = instances['Reservations'][0]['Instances'][0]['InstanceId']
+        ec2.stop_instances(InstanceIds=[instance_id])
+
+        await interaction.response.send_message(f"✅ Minecraft server {INSTANCE_NAME} is shutting down.")
+    except Exception as e:
+        await interaction.response.send_message(f"❌ Failed to shutdown server: {str(e)}")
+
+# /resume command
+@tree.command(name="resume", description="Resume the Minecraft server")
+async def resume(interaction: discord.Interaction):
+    try:
+        instances = ec2.describe_instances(Filters=[{'Name': 'tag:Name', 'Values': [INSTANCE_NAME]}])
+        instance_id = instances['Reservations'][0]['Instances'][0]['InstanceId']
+        ec2.start_instances(InstanceIds=[instance_id])
+
+        await interaction.response.send_message(f"✅ Minecraft server {INSTANCE_NAME} is resuming.")
+    except Exception as e:
+        await interaction.response.send_message(f"❌ Failed to resume server: {str(e)}")
+
+@bot.event
+async def on_ready():
+    print(f"Bot is ready as {bot.user}")
+    try:
+        synced = await tree.sync()
+        print(f"Synced {len(synced)} command(s).")
+    except Exception as e:
+        print(f"Error syncing commands: {e}")
+
+bot.run(DISCORD_TOKEN)
