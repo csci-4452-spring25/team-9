@@ -2,3 +2,4 @@ discord.py
 boto3
 PyNaCl
 PyGithub
+python-dotenv
