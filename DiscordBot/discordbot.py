@@ -5,7 +5,6 @@ from discord_interactions import verify_key, InteractionType, InteractionRespons
 from github import Github
 
 # Get environment variables
-DISCORD_PUBLIC_KEY = os.getenv("DISCORD_PUBLIC_KEY")
 GH_TOKEN = os.getenv("GH_TOKEN")
 GH_REPO = os.getenv("GH_REPO")
 GH_BRANCH = os.getenv("GH_BRANCH", "main")
@@ -17,18 +16,23 @@ repo = github.get_repo(GH_REPO)
 
 # Verify Discord request signature
 def verify_signature(event):
+    DISCORD_PUBLIC_KEY = os.getenv("DISCORD_PUBLIC_KEY")
+    if not DISCORD_PUBLIC_KEY:
+        print("DISCORD_PUBLIC_KEY is missing!")
+        return False
+
     signature = event['headers'].get('x-signature-ed25519')
     timestamp = event['headers'].get('x-signature-timestamp')
-    if event.get("isBase64Encoded"):
-        body = base64.b64decode(event["body"]).decode("utf-8")
-    else:
-        body = event['body']
 
-    is_verified = verify_key(
-        raw_body.encode(body), signature, timestamp, discord_public_key
-    )
-    print("Event Verification Status:", is_verified)
-    return is_verified
+    if event.get("isBase64Encoded"):
+        raw_body = base64.b64decode(event["body"])
+    else:
+        raw_body = event["body"].encode("utf-8")
+
+    is_valid = verify_key(raw_body, signature, timestamp, DISCORD_PUBLIC_KEY)
+    print("Signature verification:", is_valid)
+    return is_valid
+
     
     if not verify_key(body, signature, timestamp, DISCORD_PUBLIC_KEY):
         raise Exception("Invalid request signature")
