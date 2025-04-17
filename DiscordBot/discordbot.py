@@ -56,16 +56,31 @@ async def push_tfvars(
     filename = f"MinecraftServer/terraform.tfvars"
 
     try:
-        repo.create_file(
-            path=filename,
-            message=f"Add tfvars file via Discord bot: {filename}",
-            content=content,
-            branch=GH_BRANCH
-        )
-        await interaction.response.send_message(f"✅ tfvars file pushed to `{filename}` in `{GH_REPO}`.")
+        # Check if the file already exists
+        try:
+            existing_file = repo.get_contents(filename, ref=GH_BRANCH)
+            sha = existing_file.sha  # Get the current SHA of the existing file
+            
+            # If it exists, update it
+            repo.update_file(
+                path=filename,
+                message=f"Update tfvars file via Discord bot: {filename}",
+                content=content,
+                sha=sha,
+                branch=GH_BRANCH
+            )
+            await interaction.response.send_message(f"✅ tfvars file updated in `{filename}` in `{GH_REPO}`.")
+        except Exception:
+            # If the file does not exist, create it
+            repo.create_file(
+                path=filename,
+                message=f"Add tfvars file via Discord bot: {filename}",
+                content=content,
+                branch=GH_BRANCH
+            )
+            await interaction.response.send_message(f"✅ tfvars file created in `{filename}` in `{GH_REPO}`.")
     except Exception as e:
         await interaction.response.send_message(f"❌ Failed to push file: {str(e)}")
-
 # /status command
 @tree.command(name="status", description="Check the status of the Minecraft server")
 async def status(interaction: discord.Interaction):
