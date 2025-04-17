@@ -1,6 +1,6 @@
 name: "Terraform Apply"
 
-#on:
+on:
   push:
     branches:
       - main
