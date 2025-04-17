@@ -12,7 +12,7 @@ env:
 jobs:
   terraform:
     if: github.repository != 'hashicorp-education/learn-terraform-github-actions'
-    name: "Terraform Apply"
+    name: "Terraform Apply for Discord Bot"
     runs-on: ubuntu-latest
     permissions: 
       contents: read
