@@ -20,6 +20,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Create .env file for bot
+        run: |
+          cat <<EOF > ./DiscordBot/.env
+          DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+          GH_TOKEN=${{ secrets.GH_TOKEN }}
+          GH_REPO=${{ secrets.GH_REPO }}
+          GH_BRANCH=${{ secrets.GH_BRANCH }}
+          TFVARS_FOLDER=${{ secrets.TFVARS_FOLDER }}
+          EOF
+
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
         id: apply-upload
