@@ -18,7 +18,7 @@ jobs:
       contents: read
     steps:
       - name: create env file
-        uses: ozaytsev86/create-env-file@v2.0.0
+        uses: ozaytsev86/create-env-file-action@v2.0.0
         with:
           ENV_DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
           ENV_GH_TOKEN: ${{ secrets.GH_TOKEN }}
