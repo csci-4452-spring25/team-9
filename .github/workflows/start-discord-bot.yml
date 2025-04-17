@@ -17,6 +17,19 @@ jobs:
     permissions: 
       contents: read
     steps:
+      - name: Write env file
+        run:
+          echo DISCORD_TOKEN="$DISCORD_TOKEN" >> ~/.env
+          echo GH_TOKEN="$GH_TOKEN" >> ~/.env
+          echo GH_REPO="$GH_REPO" >> ~/.env
+          echo GH_BRANCH="$GH_BRANCH" >> ~/.env
+        shell: bash
+        env: 
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_REPO: ${{ secrets.GH_REPO }}
+          GH_BRANCH: ${{ secrets.GH_BRANCH }}
+          
       - name: Checkout
         uses: actions/checkout@v3
 
