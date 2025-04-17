@@ -10,18 +10,6 @@ env:
   CONFIG_DIRECTORY: "./DiscordBot"
 
 jobs:
-  create-env:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Create env file
-      uses: SpicyPizza/create-envfile@v2.0
-      with: 
-        env_DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-        env_GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        env_GH_REPO: ${{ secrets.GH_REPO }}
-        env_GH_BRANCH: ${{ secrets.GH_BRANCH }}
-        directory: ./
-        file_name: .env
   terraform:
     if: github.repository != 'hashicorp-education/learn-terraform-github-actions'
     name: "Terraform Apply for Discord Bot"
