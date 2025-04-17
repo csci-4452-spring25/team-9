@@ -17,14 +17,6 @@ jobs:
     permissions: 
       contents: read
     steps:
-      - name: create env file
-        uses: ozaytsev86/create-env-file-action@v2.0.0
-        with:
-          ENV_DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          ENV_GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          ENV_GH_REPO: ${{ secrets.GH_BRANCH }}
-          ENV_GH_BRANCH: ${{ secrets.GH_BRANCH }}
-          
       - name: Checkout
         uses: actions/checkout@v3
 
