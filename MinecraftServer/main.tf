@@ -17,6 +17,7 @@ resource "aws_instance" "minecraft" {
   ami                    = data.aws_ami.ami.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.minecraft.id]
+  subnet_id              = aws_subnet.mcsubnet.id
   key_name               = "key-test"
   user_data              = <<-EOF
     #!/bin/bash
@@ -29,9 +30,14 @@ resource "aws_instance" "minecraft" {
     sed -i 's/eula=false/eula=true/' eula.txt
     java -Xmx1024M -Xms1024M -jar server.jar nogui
     EOF
+  tags = {
+    Name = "Minecraft Server"
+  }
 }
 
 resource "aws_security_group" "minecraft" {
+  name   = "Minecraft SG"
+  vpc_id = aws_vpc.mcvpc.id
   ingress {
     from_port   = 22
     to_port     = 22
