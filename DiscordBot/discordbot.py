@@ -69,7 +69,7 @@ async def push_tfvars(
                 sha=sha,
                 branch=GH_BRANCH
             )
-            await interaction.response.send_message(f"✅ tfvars file updated in `{filename}` in `{GH_REPO}`.")
+            await interaction.response.send_message(f"✅ tfvars file updated.")
         except Exception:
             # If the file does not exist, create it
             repo.create_file(
@@ -78,7 +78,7 @@ async def push_tfvars(
                 content=content,
                 branch=GH_BRANCH
             )
-            await interaction.response.send_message(f"✅ tfvars file created in `{filename}` in `{GH_REPO}`.")
+            await interaction.response.send_message(f"✅ tfvars file created.")
     except Exception as e:
         await interaction.response.send_message(f"❌ Failed to push file: {str(e)}")
 # /status command
