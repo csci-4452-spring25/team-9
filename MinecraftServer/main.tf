@@ -102,9 +102,3 @@ data "aws_ami" "ami" {
   }
 }
 
-resource "aws_s3_bucket" "bucket" {
-  bucket = "MCServer-Bucket"
-  tags = {
-    Name = "MC Bucket"
-  }
-}
