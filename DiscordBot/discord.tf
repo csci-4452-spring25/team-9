@@ -22,7 +22,8 @@ resource "aws_instance" "Discord" {
   user_data = templatefile("user_data.sh.tpl", {
     discordbot   = file("${path.module}/discordbot.py"),
     env_file     = file("${path.module}/.env"),
-    requirements = file("${path.module}/requirements.txt")
+    requirements = file("${path.module}/requirements.txt"),
+    service      = file("${path.module}/discord.service")
   })
   tags = {
     Name = "Discord Bot"
