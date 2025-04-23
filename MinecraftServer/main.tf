@@ -32,25 +32,26 @@ resource "aws_instance" "minecraft" {
 
     wget $MINECRAFTSERVERURL
 
-    chown -R minecraft:minecraft /opt/minecraft
+    chown -R minecraft:minecraft /opt/minecraft/
     java -Xmx1300M -Xms1300M -jar server.jar nogui
     sleep 40
     sed -i 's/false/true/p' eula.txt
     touch start
-    printf '#!/bin/bash\nsudo java -Xmx1300M -Xms1300M -jar server.jar nogui\n' >> start
+    printf '#!/bin/bash\njava -Xmx1300M -Xms1300M -jar server.jar nogui\n' >> start
     chmod +x start
     sleep 1
     touch stop
-    printf '#!/bin/bash\nsudo kill -9 $(ps -ef | pgrep -f "java")' >> stop
+    printf '#!/bin/bash\nkill -9 $(ps -ef | pgrep -f "java")' >> stop
     chmod +x stop
     sleep 1
     
-    cd /etc/systemd/system
+    cd /etc/systemd/system/
     touch minecraft.service
     printf '[Unit]\nDescription=Minecraft Server on start up\nWants=network-online.target\n[Service]\nUser=minecraft\nWorkingDirectory=/opt/minecraft/server\nExecStart=/opt/minecraft/server/start\nStandardInput=null\n[Install]\nWantedBy=multi-user.target' >> minecraft.service
     sudo systemctl daemon-reload
-    sudo systemctl start minecraft.service
     sudo systemctl enable minecraft.service
+    sudo systemctl start minecraft.service
+    
     EOF
   tags = {
     Name = "Minecraft Server"
