@@ -30,3 +30,14 @@ sudo pip3 install -r /home/ec2-user/app/requirements.txt
 
 # Run the Python script
 python3 /home/ec2-user/app/discordbot.py
+
+cat <<EOF > /etc/systemd/system/discord.service
+${[Unit]
+Description=discord bot
+
+[Service]
+ExecStart=/usr/bin/python3 /home/ec2-user/app/discordbot.py
+
+[Install]
+WantedBy=multi-user.target}
+EOF
