@@ -32,11 +32,11 @@ resource "aws_instance" "minecraft" {
     sleep 40
     sed -i 's/false/true/p' eula.txt
     touch start
-    printf '#!/bin/bash\njava -Xmx1300M -Xms1300M -jar server.jar nogui\n' >> start
+    printf '#!/bin/bash\nsudo java -Xmx1300M -Xms1300M -jar server.jar nogui\n' >> start
     chmod +x start
     sleep 1
     touch stop
-    printf '#!/bin/bash\nkill -9 $(ps -ef | pgrep -f "java")' >> stop
+    printf '#!/bin/bash\nsudo kill -9 $(ps -ef | pgrep -f "java")' >> stop
     chmod +x stop
     sleep 1
     cd /etc/systemd/system
@@ -102,9 +102,3 @@ data "aws_ami" "ami" {
   }
 }
 
-resource "aws_s3_bucket" "bucket" {
-  bucket = "MCServer-Bucket"
-  tags = {
-    Name = "MC Bucket"
-  }
-}
