@@ -19,6 +19,7 @@ resource "aws_instance" "Discord" {
   subnet_id              = aws_subnet.mcsubnet.id
   vpc_security_group_ids = [aws_security_group.discord.id]
   key_name               = "key-test"
+  iam_instance_profile   = aws_iam_instance_profile.iam_profile.name
   user_data = templatefile("user_data.sh.tpl", {
     discordbot   = file("${path.module}/discordbot.py"),
     env_file     = file("${path.module}/.env"),

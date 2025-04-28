@@ -37,3 +37,49 @@ resource "aws_route_table_association" "route_table_association" {
   subnet_id      = aws_subnet.mcsubnet.id
   route_table_id = aws_route_table.route_table.id
 }
+
+resource "aws_iam_role_policy" "test_policy" {
+  name = "iam_policy"
+  role = aws_iam_role.iam_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:*",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role" "iam_role" {
+  name = "discord_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "attachment" {
+  role       = aws_iam_role.iam_role.name
+  policy_arn = aws_iam_policy.iam_policy.arn
+}
+
+resource "aws_iam_instance_profile" "iam_profile" {
+  name = "Discord-Profile"
+  role = aws_iam_role.iam_role.name
+}
