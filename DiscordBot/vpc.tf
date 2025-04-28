@@ -38,7 +38,7 @@ resource "aws_route_table_association" "route_table_association" {
   route_table_id = aws_route_table.route_table.id
 }
 
-resource "aws_iam_role_policy" "iam_policy" {
+resource "aws_iam_policy" "iam_policy" {
   name = "iam_policy"
   role = aws_iam_role.iam_role.id
 
