@@ -15,7 +15,7 @@ GH_REPO = os.getenv("GH_REPO")
 GH_BRANCH = os.getenv("GH_BRANCH", "main")
 TFVARS_FOLDER = os.getenv("TFVARS_FOLDER", "MinecraftServer")
 AWS_REGION = "us-east-1"
-INSTANCE_NAME = "Minecraft Server"  # Name of EC2 instance
+INSTANCE_NAME = "Minecraft Server"
 
 # GitHub setup
 github = Github(GH_TOKEN)
