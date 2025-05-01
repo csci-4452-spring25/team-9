@@ -54,7 +54,7 @@ resource "aws_instance" "minecraft" {
     
     EOF
   tags = {
-    Name = "Minecraft Server"
+    Name = "Discord Minecraft"
   }
 }
 
